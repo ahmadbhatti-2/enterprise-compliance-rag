@@ -1,0 +1,22 @@
+# Security & Environments
+.env
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+
+# Node / Frontend
+node_modules/
+dist/
+.npm/
+package-lock.json
+
+# Database & Local Documents
+vector_db/chroma_db/
+data/
+
+# OS Files
+.DS_Store
+Thumbs.db

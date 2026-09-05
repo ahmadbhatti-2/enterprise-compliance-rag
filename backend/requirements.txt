@@ -1,0 +1,26 @@
+# API & Server
+fastapi
+uvicorn
+pydantic
+python-dotenv
+
+# LLM & Framework
+langchain
+langchain-community
+langchain-google-genai
+langchain-chroma
+langchain-text-splitters
+
+# Document Processing
+pypdf
+pdfplumber
+
+# Vector DB
+chromadb
+
+# Advanced Retrieval (For Hybrid Search & Reranking)
+rank_bm25
+sentence-transformers
+
+# Testing
+pytest

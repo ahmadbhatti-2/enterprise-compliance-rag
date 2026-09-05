@@ -1,0 +1,12 @@
+[
+    {
+        "question": "What is the purpose of AI RMF?",
+        "expected_answer": "The AI RMF is a resource to help organizations manage AI risks and promote trustworthy and responsible development and use of AI systems.",
+        "ground_truth_page": "2"
+    },
+    {
+        "question": "How does AI RMF handle trustworthiness?",
+        "expected_answer": "It provides a framework to incorporate trustworthiness considerations into the design, development, and evaluation of AI systems.",
+        "ground_truth_page": "5"
+    }
+]
