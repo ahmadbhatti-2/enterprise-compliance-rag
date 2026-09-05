@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { sendMessageToBackend } from '../services/api';
 
 export default function Chat() {
     // 1. Sessions State
@@ -53,10 +52,9 @@ export default function Chat() {
 
         setInput('');
         
-        // Chat ka title khud update karne ka naya FIXED logic
+        // Chat ka title khud update karne ka logic
         const updateSessionWithUser = sessions.map(session => {
             if (session.id === activeSessionId) {
-                // Agar yeh is chat ka pehla sawal hai (yani sirf 1 AI message pehle se tha)
                 let newTitle = session.title;
                 if (session.messages.length === 1) {
                     newTitle = textToSend.length > 25 ? textToSend.substring(0, 22) + '...' : textToSend;
@@ -70,28 +68,38 @@ export default function Chat() {
         setLoading(true);
 
         try {
-            const aiResponse = await sendMessageToBackend(textToSend);
+            // Real Backend API Call (FastAPI endpoint /api/chat)
+            const response = await fetch('http://localhost:8000/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query: textToSend }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+
+            const data = await response.json();
             
-            const sampleSources = [
-                { name: 'AI_RMF_1.0.pdf', page: 'Page 3' },
-                { name: 'NIST_Privacy_Framework.pdf', page: 'Page 12' }
-            ];
+            // Backend se aane wale dynamic sources
+            const realSources = data.sources || [];
 
             setSessions(prevSessions => prevSessions.map(session => {
                 if (session.id === activeSessionId) {
                     return { 
                         ...session, 
-                        messages: [...session.messages, { sender: 'ai', text: aiResponse, sources: sampleSources }] 
+                        messages: [...session.messages, { sender: 'ai', text: data.answer, sources: realSources }] 
                     };
                 }
                 return session;
             }));
         } catch (error) {
+            console.error('Chat error:', error);
             setSessions(prevSessions => prevSessions.map(session => {
                 if (session.id === activeSessionId) {
                     return { 
                         ...session, 
-                        messages: [...session.messages, { sender: 'ai', text: 'Connection error. Ensure backend is running.', sources: [] }] 
+                        messages: [...session.messages, { sender: 'ai', text: 'Connection error. Ensure the FastAPI backend is running.', sources: [] }] 
                     };
                 }
                 return session;
@@ -227,18 +235,18 @@ export default function Chat() {
 
                                     {msg.sources && msg.sources.length > 0 && (
                                         <div className="mt-6 pt-5 border-t border-zinc-800">
-                                            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-3">Sources</p>
+                                            <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-3">Verified Citations</p>
                                             <div className="flex flex-wrap gap-3">
                                                 {msg.sources.map((src, idx) => (
                                                     <div 
                                                         key={idx}
-                                                        className="bg-[#1a1a1a] border border-zinc-700 hover:border-teal-600/40 p-3 rounded-lg flex flex-col gap-1 min-w-[160px] cursor-pointer transition-colors"
+                                                        className="bg-[#1a1a1a] border border-zinc-700 hover:border-teal-600/40 p-3 rounded-lg flex flex-col gap-1 min-w-[160px] transition-colors"
                                                     >
                                                         <div className="flex items-center gap-2">
                                                             <span className="text-teal-500 text-sm">📄</span>
-                                                            <span className="text-xs font-medium text-zinc-200 truncate">{src.name}</span>
+                                                            <span className="text-xs font-mono text-teal-400 truncate">{src.name}</span>
                                                         </div>
-                                                        <span className="text-[10px] text-zinc-500 ml-6">{src.page}</span>
+                                                        <span className="text-[10px] text-zinc-400 ml-6">{src.page}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -252,7 +260,7 @@ export default function Chat() {
                             <div className="flex justify-start">
                                 <div className="bg-[#111111] border border-zinc-800 text-zinc-400 rounded-2xl rounded-bl-sm p-4 text-xs flex items-center gap-3">
                                     <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></div>
-                                    <span className="font-medium">Searching knowledge base...</span>
+                                    <span className="font-medium">Searching vector repository and synthesizing response...</span>
                                 </div>
                             </div>
                         )}
@@ -267,7 +275,8 @@ export default function Chat() {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Ask about compliance, policies, or risks..."
-                            className="w-full bg-[#111111] border border-zinc-800 focus:border-teal-600 rounded-xl pl-5 pr-14 py-4 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none transition-all"
+                            disabled={loading}
+                            className="w-full bg-[#111111] border border-zinc-800 focus:border-teal-600 rounded-xl pl-5 pr-14 py-4 text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none transition-all disabled:opacity-50"
                         />
                         <button
                             type="submit"
