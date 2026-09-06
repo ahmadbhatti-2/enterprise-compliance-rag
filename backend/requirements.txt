@@ -10,6 +10,7 @@ langchain-community
 langchain-google-genai
 langchain-chroma
 langchain-text-splitters
+langchain-huggingface
 
 # Document Processing
 pypdf
