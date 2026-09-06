@@ -1,15 +1,26 @@
-import axios from 'axios';
+// frontend/src/services/api.js
 
 const API_BASE_URL = 'http://localhost:8000';
 
-export const sendMessageToBackend = async (question) => {
+export async function sendMessageToBackend(query) {
     try {
-        const response = await axios.post(`${API_BASE_URL}/ask`, {
-            question: question
+        const response = await fetch(`${API_BASE_URL}/api/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ query }),
         });
-        return response.data.answer;
+
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data;
+        
     } catch (error) {
-        console.error("Error communicating with backend:", error);
+        console.error("API Communication Error:", error);
         throw error;
     }
-};
+}
