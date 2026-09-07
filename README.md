@@ -2,7 +2,7 @@
 
 > A full-stack Retrieval-Augmented Generation (RAG) platform for querying enterprise compliance, AI risk, privacy, and governance documents.
 
-The platform combines hybrid retrieval, semantic search, BM25 keyword search, reciprocal rank fusion, cross-encoder reranking, and Gemini-powered generation to provide grounded answers with document citations.
+The platform combines hybrid retrieval, semantic search, BM25 keyword search, Reciprocal Rank Fusion (RRF), cross-encoder reranking, and Gemini-powered generation to provide grounded answers with document citations.
 
 ## Knowledge Base
 
@@ -30,7 +30,6 @@ The current knowledge base contains trusted guidance and frameworks from:
 
 ## System Architecture
 
-```text
 User
   |
   v
@@ -96,35 +95,28 @@ Grounded Answer + Citations
 
 ## Project Structure
 
-```text
 enterprise-compliance-rag/
 │
 ├── backend/
 │   ├── app/
 │   │   ├── config/
 │   │   │   └── settings.py
-│   │   │
 │   │   ├── ingestion/
 │   │   │   ├── loader.py
 │   │   │   ├── chunking.py
 │   │   │   └── index.py
-│   │   │
 │   │   ├── retrieval/
 │   │   │   ├── retriever.py
 │   │   │   ├── hybrid.py
 │   │   │   └── reranker.py
-│   │   │
 │   │   ├── rag/
 │   │   │   ├── chain.py
 │   │   │   ├── memory.py
 │   │   │   └── prompts.py
-│   │   │
 │   │   ├── evaluation/
 │   │   │   ├── dataset.json
 │   │   │   └── evaluate.py
-│   │   │
 │   │   └── main.py
-│   │
 │   ├── data/
 │   ├── vector_db/
 │   ├── requirements.txt
@@ -136,7 +128,6 @@ enterprise-compliance-rag/
 │   │   ├── services/
 │   │   ├── App.jsx
 │   │   └── main.jsx
-│   │
 │   └── package.json
 │
 ├── .gitignore
@@ -155,16 +146,12 @@ enterprise-compliance-rag/
 ### Backend Setup
 
 cd backend
-
 python -m venv venv
-
 venv\Scripts\activate
-
 pip install -r requirements.txt
-
 copy .env.example .env
 
-Add your Gemini API key to `backend/.env`:
+Add your Gemini API key to backend/.env:
 
 GOOGLE_API_KEY=your_api_key_here
 
@@ -183,9 +170,7 @@ Swagger documentation: http://localhost:8000/docs
 ### Frontend Setup
 
 cd frontend
-
 npm install
-
 npm run dev
 
 Frontend: http://localhost:5173
@@ -194,25 +179,42 @@ Frontend: http://localhost:5173
 
 ### Health Check
 
-GET `/health`
+GET /health
 
 Returns the current backend health status.
 
 ### Chat
 
-POST `/api/chat`
+POST /api/chat
 
-Request:
+Example request:
 
 {
   "query": "What is the purpose of the AI Risk Management Framework?"
 }
 
-The endpoint returns a generated answer along with the retrieved document sources and page references.
+The endpoint returns a generated answer along with retrieved document sources and page references.
 
 ### Interactive API Documentation
 
 http://localhost:8000/docs
+
+## Demo
+
+The application provides a web-based interface for interacting with the enterprise compliance knowledge base.
+
+The demo demonstrates:
+
+- Asking compliance and risk-related questions
+- Hybrid document retrieval
+- Cross-encoder reranking
+- Grounded answer generation
+- Source citations
+- Follow-up questions
+
+### Application Interface
+
+![Application Dashboard and RAG Answer](docs/screenshots/rag-answer.png)
 
 ## Evaluation
 
@@ -231,7 +233,7 @@ python -m app.evaluation.evaluate
 
 The evaluation uses a curated test dataset containing questions, expected answers, and ground-truth source pages.
 
-Example evaluation output:
+### Current Evaluation Results
 
 Faithfulness: 100.0%
 Retrieval Recall: 100.0%
@@ -244,13 +246,21 @@ Citation Correctness: 100.0%
 
 The evaluation dataset is located at:
 
-`backend/app/evaluation/dataset.json`
+backend/app/evaluation/dataset.json
+
+## Environment Variables
+
+Create a .env file inside the backend directory:
+
+GOOGLE_API_KEY=your_api_key_here
+
+Do not commit .env or API keys to the repository.
 
 ## Limitations
 
 - The current knowledge base is limited to the included NIST documents.
 - The evaluation dataset is currently small and should be expanded for broader performance measurement.
-- Conversation memory is currently maintained in-process and is not persisted across application restarts.
+- Conversation memory is maintained in-process and is not persisted across application restarts.
 - ChromaDB is configured as a local vector database.
 - AI-generated responses should be verified against the original source documents for high-stakes compliance decisions.
 
@@ -269,40 +279,6 @@ The included NIST publications provide frameworks, guidance, and recommended pra
 - Add authentication and role-based access control
 - Add production monitoring and observability
 - Support scalable external vector database deployments
-
-## Demo
-
-The application provides a web-based interface for interacting with the enterprise compliance knowledge base.
-
-The demo demonstrates:
-
-- Asking compliance and risk-related questions
-- Hybrid document retrieval
-- Cross-encoder reranking
-- Grounded answer generation
-- Source citations
-- Follow-up questions
-- RAG evaluation
-
-### Screenshots
-
-Screenshots of the application interface and evaluation results will be added here.
-
-### Application Interface
-
-![Application Dashboard and RAG Answer](docs/screenshots/rag-answer.png)
-
-## Environment Variables
-
-Create a `.env` file inside the `backend` directory and add your Gemini API key:
-
-GOOGLE_API_KEY=your_api_key_here
-
-Do not commit `.env` or API keys to the repository.
-
-## License
-
-This project is intended for educational, research, and portfolio demonstration purposes.
 
 ## Author
 
